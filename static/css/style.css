@@ -605,6 +605,34 @@ body {
     transform: translateY(-1px);
 }
 
+.card-actions-wrapper {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-copy-sm {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--text-muted);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: var(--transition-smooth);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-copy-sm:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+    color: var(--text-main);
+    border-color: var(--border-color-hover);
+    transform: translateY(-1px);
+}
+
+
 /* ==========================================================================
    Loading, Error, and Empty States
    ========================================================================== */

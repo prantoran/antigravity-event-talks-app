@@ -24,6 +24,7 @@ const clearSearchBtn = document.getElementById('clear-search-btn');
 const filterButtonsContainer = document.getElementById('filter-buttons');
 const retryBtn = document.getElementById('retry-btn');
 const resetFiltersBtn = document.getElementById('reset-filters-btn');
+const exportCsvBtn = document.getElementById('export-csv-btn');
 
 // Modal Elements
 const tweetModal = document.getElementById('tweet-modal');
@@ -78,6 +79,9 @@ function setupEventListeners() {
 
     // Reset buttons on empty states
     resetFiltersBtn.addEventListener('click', resetFilters);
+
+    // Export CSV button
+    exportCsvBtn.addEventListener('click', exportToCSV);
 
     // Modal Close
     closeModalBtn.addEventListener('click', hideTweetModal);
@@ -193,6 +197,9 @@ function renderNotes() {
         return;
     }
 
+    // Enable export button since we have items
+    exportCsvBtn.disabled = false;
+
     notesList.innerHTML = '';
     filteredNotes.forEach((note, index) => {
         const card = document.createElement('article');
@@ -219,9 +226,14 @@ function renderNotes() {
                 <a href="${note.link}" target="_blank" rel="noopener noreferrer" class="card-link">
                     Read in docs <i class="fa-solid fa-arrow-up-right-from-square"></i>
                 </a>
-                <button class="btn-tweet-sm" onclick="openTweetComposer(${allNotes.indexOf(note)})">
-                    <i class="fa-brands fa-x-twitter"></i> Tweet
-                </button>
+                <div class="card-actions-wrapper">
+                    <button class="btn-copy-sm" onclick="copyNoteToClipboard(this, ${allNotes.indexOf(note)})" title="Copy to clipboard">
+                        <i class="fa-regular fa-copy"></i> <span>Copy</span>
+                    </button>
+                    <button class="btn-tweet-sm" onclick="openTweetComposer(${allNotes.indexOf(note)})" title="Tweet update">
+                        <i class="fa-brands fa-x-twitter"></i> Tweet
+                    </button>
+                </div>
             </div>
         `;
         
@@ -414,6 +426,7 @@ function hideAllStates() {
     errorState.style.display = 'none';
     emptyState.style.display = 'none';
     notesList.style.display = 'none';
+    exportCsvBtn.disabled = true;
 }
 
 function showTweetModal() {
@@ -440,4 +453,86 @@ function showToast(message) {
             toast.style.animation = ''; // Reset animation
         }, 300);
     }, 3500);
+}
+
+// ==========================================================================
+// Copy to Clipboard Utility
+// ==========================================================================
+window.copyNoteToClipboard = function(button, noteIndex) {
+    const note = allNotes[noteIndex];
+    if (!note) return;
+
+    const rawText = stripHtml(note.content).trim();
+    const formattedText = `BigQuery ${note.type} (${note.date}):\n${rawText}\n\nRead more: ${note.link}`;
+
+    navigator.clipboard.writeText(formattedText).then(() => {
+        // Find elements inside button
+        const icon = button.querySelector('i');
+        const text = button.querySelector('span');
+        
+        // Provide visual feedback
+        button.style.borderColor = 'var(--color-feature)';
+        button.style.color = 'var(--color-feature)';
+        if (icon) icon.className = 'fa-solid fa-check';
+        if (text) text.textContent = 'Copied!';
+        
+        showToast('Copied release note to clipboard!');
+        
+        // Revert feedback after 2 seconds
+        setTimeout(() => {
+            button.style.borderColor = '';
+            button.style.color = '';
+            if (icon) icon.className = 'fa-regular fa-copy';
+            if (text) text.textContent = 'Copy';
+        }, 2000);
+    }).catch(err => {
+        console.error('Failed to copy: ', err);
+        showToast('Failed to copy release note.');
+    });
+};
+
+// ==========================================================================
+// Export to CSV Utility (UTF-8, UTF-16, Blob safe)
+// ==========================================================================
+function exportToCSV() {
+    if (filteredNotes.length === 0) return;
+    
+    const headers = ["Date", "Type", "Content", "Link"];
+    const rows = [headers];
+    
+    filteredNotes.forEach(note => {
+        const plainText = stripHtml(note.content).trim();
+        rows.push([
+            note.date,
+            note.type,
+            plainText,
+            note.link
+        ]);
+    });
+    
+    // Map rows to escaped CSV format
+    const csvContent = rows.map(row => 
+        row.map(val => {
+            const strVal = val === null || val === undefined ? "" : String(val);
+            return `"${strVal.replace(/"/g, '""')}"`;
+        }).join(",")
+    ).join("\n");
+    
+    // Safe Blob download to support large files & special symbols
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    
+    const downloadLink = document.createElement("a");
+    downloadLink.setAttribute("href", url);
+    
+    const filterName = currentTypeFilter.toLowerCase();
+    const dateStr = new Date().toISOString().slice(0, 10);
+    downloadLink.setAttribute("download", `bigquery_release_notes_${filterName}_${dateStr}.csv`);
+    downloadLink.style.visibility = 'hidden';
+    
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+    
+    showToast('Exported release notes to CSV successfully!');
 }
