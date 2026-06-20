@@ -25,6 +25,7 @@ const filterButtonsContainer = document.getElementById('filter-buttons');
 const retryBtn = document.getElementById('retry-btn');
 const resetFiltersBtn = document.getElementById('reset-filters-btn');
 const exportCsvBtn = document.getElementById('export-csv-btn');
+const themeCheckbox = document.getElementById('theme-checkbox');
 
 // Modal Elements
 const tweetModal = document.getElementById('tweet-modal');
@@ -46,6 +47,13 @@ const toastMessage = document.getElementById('toast-message');
 // Initialization & Event Listeners
 // ==========================================================================
 document.addEventListener('DOMContentLoaded', () => {
+    // Load Saved Theme
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+        if (themeCheckbox) themeCheckbox.checked = true;
+        document.body.classList.add('light-mode');
+    }
+
     fetchReleaseNotes(false);
     setupEventListeners();
 });
@@ -82,6 +90,9 @@ function setupEventListeners() {
 
     // Export CSV button
     exportCsvBtn.addEventListener('click', exportToCSV);
+
+    // Theme Switcher Toggle
+    themeCheckbox.addEventListener('change', handleThemeChange);
 
     // Modal Close
     closeModalBtn.addEventListener('click', hideTweetModal);
@@ -535,4 +546,19 @@ function exportToCSV() {
     document.body.removeChild(downloadLink);
     
     showToast('Exported release notes to CSV successfully!');
+}
+
+// ==========================================================================
+// Theme Toggler Logic (Saves preference in LocalStorage)
+// ==========================================================================
+function handleThemeChange(e) {
+    if (e.target.checked) {
+        document.body.classList.add('light-mode');
+        localStorage.setItem('theme', 'light');
+        showToast('Swapped to Light Theme!');
+    } else {
+        document.body.classList.remove('light-mode');
+        localStorage.setItem('theme', 'dark');
+        showToast('Swapped to Dark Theme!');
+    }
 }

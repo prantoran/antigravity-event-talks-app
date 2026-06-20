@@ -961,3 +961,246 @@ body {
         gap: 8px;
     }
 }
+
+/* ==========================================================================
+   Theme Switcher Slider & Light Mode Overrides
+   ========================================================================== */
+
+/* Theme Toggle Switch Container */
+.theme-toggle-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border-color);
+    padding: 6px 10px;
+    border-radius: 99px;
+}
+
+.theme-icon {
+    font-size: 0.85rem;
+    transition: var(--transition-smooth);
+}
+
+.theme-icon.sun {
+    color: #f59e0b; /* Golden Sun */
+}
+
+.theme-icon.moon {
+    color: #a5b4fc; /* Pale Indigo Moon */
+}
+
+/* Sun and Moon Opacities based on check state */
+.theme-toggle-container .theme-icon.moon {
+    opacity: 1; /* Highlighted by default (dark mode) */
+}
+.theme-toggle-container .theme-icon.sun {
+    opacity: 0.3; /* Dimmed by default (dark mode) */
+}
+
+/* Switch Slider Base */
+.theme-switch {
+    position: relative;
+    display: inline-block;
+    width: 32px;
+    height: 18px;
+}
+
+.theme-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.1);
+    transition: .3s;
+    border: 1px solid var(--border-color);
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 10px;
+    width: 10px;
+    left: 3px;
+    bottom: 3px;
+    background-color: var(--text-main);
+    transition: .3s;
+}
+
+input:checked + .slider {
+    background-color: var(--primary-color);
+}
+
+input:checked + .slider:before {
+    transform: translateX(14px);
+}
+
+.slider.round {
+    border-radius: 20px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+/* Global Transitions for smooth color scheme swapping */
+body, 
+.glass-panel, 
+.note-card, 
+.note-card-body, 
+.note-card-body code, 
+.note-card-header, 
+.note-card-footer, 
+.search-wrapper input,
+.filter-btn, 
+.btn-secondary, 
+.btn-copy-sm,
+.btn-tweet-sm {
+    transition: background-color 0.35s ease, 
+                border-color 0.35s ease, 
+                color 0.35s ease, 
+                box-shadow 0.35s ease, 
+                transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ==========================================================================
+   Light Mode Overrides (Overrides root custom variables)
+   ========================================================================== */
+body.light-mode {
+    --bg-dark: #f8fafc; /* Cool slate background */
+    --bg-card: rgba(255, 255, 255, 0.65); /* Translucent white card */
+    --bg-card-hover: rgba(255, 255, 255, 0.85);
+    --border-color: rgba(15, 23, 42, 0.08); /* Dark slate borders */
+    --border-color-hover: rgba(15, 23, 42, 0.16);
+    
+    --text-main: #0f172a; /* Dark slate main text */
+    --text-muted: #475569; /* Slate gray subtexts */
+    --text-dim: #94a3b8; /* Dim text */
+    
+    /* Modify Categories Badges for light background contrast */
+    --color-feature: #047857;
+    --color-feature-bg: rgba(4, 120, 87, 0.08);
+    --color-feature-border: rgba(4, 120, 87, 0.22);
+    
+    --color-announcement: #6d28d9;
+    --color-announcement-bg: rgba(109, 40, 217, 0.08);
+    --color-announcement-border: rgba(109, 40, 217, 0.22);
+    
+    --color-changed: #0369a1;
+    --color-changed-bg: rgba(3, 105, 161, 0.08);
+    --color-changed-border: rgba(3, 105, 161, 0.22);
+    
+    --color-issue: #b45309;
+    --color-issue-bg: rgba(180, 83, 9, 0.08);
+    --color-issue-border: rgba(180, 83, 9, 0.22);
+    
+    --color-deprecated: #b91c1c;
+    --color-deprecated-bg: rgba(185, 28, 28, 0.08);
+    --color-deprecated-border: rgba(185, 28, 28, 0.22);
+}
+
+/* Light mode support element overrides */
+body.light-mode .glow-orb {
+    opacity: 0.06;
+}
+
+body.light-mode .note-card-body code {
+    background: rgba(15, 23, 42, 0.05);
+    color: #0369a1;
+    border-color: rgba(15, 23, 42, 0.05);
+}
+
+body.light-mode .search-wrapper input {
+    background: rgba(255, 255, 255, 0.7);
+    color: #0f172a;
+}
+
+body.light-mode .search-wrapper input:focus {
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+body.light-mode .clear-search-btn {
+    color: #475569;
+}
+
+body.light-mode .clear-search-btn:hover {
+    color: #0f172a;
+}
+
+body.light-mode .filter-btn {
+    background: rgba(15, 23, 42, 0.03);
+    color: #475569;
+}
+
+body.light-mode .filter-btn:hover {
+    background: rgba(15, 23, 42, 0.06);
+    color: #0f172a;
+}
+
+body.light-mode .filter-btn.active {
+    color: #ffffff;
+}
+
+body.light-mode .status-indicator-container {
+    background: rgba(15, 23, 42, 0.03);
+}
+
+body.light-mode .btn-secondary {
+    background: rgba(15, 23, 42, 0.03);
+}
+
+body.light-mode .btn-secondary:hover {
+    background: rgba(15, 23, 42, 0.07);
+}
+
+body.light-mode .btn-copy-sm {
+    background: rgba(15, 23, 42, 0.03);
+}
+
+body.light-mode .btn-copy-sm:hover {
+    background: rgba(15, 23, 42, 0.07);
+}
+
+body.light-mode .update-preview-box {
+    background: rgba(15, 23, 42, 0.03);
+}
+
+body.light-mode .textarea-wrapper textarea {
+    background: rgba(255, 255, 255, 0.7);
+    color: #0f172a;
+}
+
+body.light-mode .textarea-wrapper textarea:focus {
+    background: #ffffff;
+}
+
+body.light-mode .hashtag-chip {
+    background: rgba(15, 23, 42, 0.03);
+}
+
+body.light-mode .hashtag-chip:hover {
+    background: rgba(15, 23, 42, 0.06);
+}
+
+body.light-mode .modal-backdrop {
+    background: rgba(15, 23, 42, 0.4);
+}
+
+/* Light mode indicator highlights */
+body.light-mode .theme-toggle-container .theme-icon.moon {
+    opacity: 0.3;
+}
+
+body.light-mode .theme-toggle-container .theme-icon.sun {
+    opacity: 1;
+}
+
